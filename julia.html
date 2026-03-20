@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Quiz Romântico - Julia Domingues ❤️</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      scroll-behavior: smooth;
+    }
+
+    :root {
+      --bg-deep: #1a0a0a;
+      --rose-primary: #c42348;
+      --gold-accent: #d4a54a;
+      --text-light: #fce4ec;
+      --surface-card: #2a0f14;
+    }
+
+    body {
+      font-family: 'Cormorant Garamond', serif;
+      background: radial-gradient(circle at 30% 20%, #1f0c0c, #120606);
+      color: var(--text-light);
+      overflow-x: hidden;
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .font-display {
+      font-family: 'Playfair Display', serif;
+    }
+
+    /* Pétalas flutuantes */
+    .petal {
+      position: fixed;
+      pointer-events: none;
+      z-index: 5;
+      opacity: 0;
+      animation: petalFall linear infinite;
+    }
+
+    @keyframes petalFall {
+      0% {
+        transform: translateY(-80px) rotate(0deg);
+        opacity: 0;
+      }
+      15% {
+        opacity: 0.7;
+      }
+      85% {
+        opacity: 0.5;
+      }
+      100% {
+        transform: translateY(calc(100vh + 120px)) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    /* Card glow */
+    @keyframes glowPulse {
+      0%, 100% {
+        box-shadow: 0 0 18px rgba(196, 35, 72, 0.3), 0 0 40px rgba(212, 165, 74, 0.1);
+      }
+      50% {
+        box-shadow: 0 0 35px rgba(196, 35, 72, 0.5), 0 0 70px rgba(212, 165, 74, 0.2);
+      }
+    }
+
+    .glow-card {
+      animation: glowPulse 4s ease-in-out infinite;
+      backdrop-filter: blur(1px);
+    }
+
+    /* Coração batendo */
+    @keyframes heartBeat {
+      0%, 100% {
+        transform: scale(1);
+      }
+      20% {
+        transform: scale(1.18);
+        text-shadow: 0 0 12px #ff90aa;
+      }
+    }
+
+    .heart-beat {
+      animation: heartBeat 1.3s ease-in-out infinite;
+      display: inline-block;
+    }
+
+    /* Fade elegante */
+    @keyframes fadeSlide {
+      0% {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .question-fade-in {
+      animation: fadeSlide 0.45s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+    }
+
+    .question-fade-out {
+      animation: fadeSlideOut 0.25s ease forwards;
+    }
+
+    @keyframes fadeSlideOut {
+      0% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+    }
+
+    /* Botão romântico */
+    .btn-rose {
+      background: linear-gradient(125deg, var(--rose-primary), #9e1f3a);
+      border: 1px solid rgba(212, 165, 74, 0.5);
+      transition: all 0.25s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      touch-action: manipulation;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .btn-rose:active {
+      transform: scale(0.96);
+    }
+
+    /* Input romântico */
+    .quiz-input {
+      background: rgba(42, 15, 20, 0.7);
+      border: 1px solid rgba(196, 35, 72, 0.5);
+      transition: all 0.3s;
+      font-size: 16px;
+    }
+
+    .quiz-input:focus {
+      border-color: var(--gold-accent);
+      box-shadow: 0 0 22px rgba(212, 165, 74, 0.3);
+      background: rgba(42, 15, 20, 0.9);
+      outline: none;
+    }
+
+    /* Bolinhas de progresso */
+    .progress-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(252, 228, 236, 0.25);
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .progress-dot.active {
+      background: var(--rose-primary);
+      box-shadow: 0 0 12px #c42348;
+      transform: scale(1.2);
+    }
+
+    .progress-dot.completed {
+      background: var(--gold-accent);
+      box-shadow: 0 0 8px #d4a54a;
+    }
+
+    /* Confetes */
+    .confetti-piece {
+      position: fixed;
+      top: -20px;
+      z-index: 120;
+      pointer-events: none;
+      animation: confettiFall linear forwards;
+    }
+
+    @keyframes confettiFall {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    /* Corações flutuantes */
+    .float-heart {
+      position: fixed;
+      bottom: -20px;
+      z-index: 110;
+      pointer-events: none;
+      animation: loveFloat 3.5s ease-out forwards;
+    }
+
+    @keyframes loveFloat {
+      0% {
+        transform: translateY(0) scale(0.6);
+        opacity: 0.9;
+      }
+      100% {
+        transform: translateY(-450px) scale(1.2);
+        opacity: 0;
+      }
+    }
+
+    /* Brilho extra */
+    .shimmer-text {
+      background: linear-gradient(135deg, #f9e0b0, #d4a54a, #ffdd99, #e6b85e);
+      background-size: 300% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 5s linear infinite;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 0% center;
+      }
+      100% {
+        background-position: 200% center;
+      }
+    }
+
+    /* Rosas decorativas */
+    .rose-corner {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      opacity: 0.5;
+      font-size: 3rem;
+      pointer-events: none;
+      z-index: 3;
+      filter: drop-shadow(0 0 6px #c42348);
+    }
+
+    .rose-corner-left {
+      left: 20px;
+      right: auto;
+      transform: scaleX(-1);
+    }
+
+    /* Telas */
+    .screen {
+      transition: opacity 0.45s ease, visibility 0.45s;
+      width: 100%;
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .screen-hidden {
+      opacity: 0;
+      visibility: hidden;
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+
+    .screen-visible {
+      opacity: 1;
+      visibility: visible;
+      position: relative;
+      pointer-events: auto;
+    }
+
+    .celebration-bg {
+      background: radial-gradient(ellipse at center, #2a0f14, #120606);
+    }
+
+    @media (max-width: 640px) {
+      .rose-corner {
+        font-size: 2.5rem;
+        bottom: 15px;
+        right: 15px;
+      }
+      .rose-corner-left {
+        left: 15px;
+      }
+      .progress-dot {
+        width: 10px;
+        height: 10px;
+      }
+      .glow-card {
+        margin: 0 1rem;
+      }
+      .btn-rose {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+        font-size: 1rem;
+      }
+      .quiz-input {
+        font-size: 16px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .glow-card {
+        padding: 1.25rem !important;
+      }
+      h1 {
+        font-size: 2.2rem !important;
+      }
+      h2 {
+        font-size: 1.5rem !important;
+      }
+    }
+
+    .max-w-xl {
+      max-width: 32rem;
+    }
+
+    #app {
+      width: 100%;
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    #quiz-transition-wrapper {
+      will-change: opacity, transform;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div id="app">
+  <div id="petals-container" class="fixed inset-0 pointer-events-none z-0 overflow-hidden"></div>
+  <div class="rose-corner">🌹</div>
+  <div class="rose-corner rose-corner-left">🌹</div>
+
+  <!-- TELA DE BOAS-VINDAS -->
+  <div id="welcome-screen" class="screen screen-visible">
+    <div class="text-center px-4 py-8 max-w-lg mx-auto w-full">
+      <div class="flex justify-center mb-4">
+        <svg width="90" height="90" viewBox="0 0 100 100" fill="none">
+          <g transform="translate(50,45)">
+            <ellipse cx="0" cy="0" rx="20" ry="24" fill="#c42348" />
+            <ellipse cx="-13" cy="4" rx="15" ry="19" fill="#a01d3a" transform="rotate(-22)" />
+            <ellipse cx="13" cy="4" rx="15" ry="19" fill="#d62b55" transform="rotate(22)" />
+            <ellipse cx="0" cy="-7" rx="12" ry="16" fill="#e74c6f" />
+          </g>
+          <path d="M50 70 L50 92" stroke="#2d6b30" stroke-width="3" stroke-linecap="round" />
+          <ellipse cx="38" cy="80" rx="12" ry="6" fill="#3a8a3e" transform="rotate(-25,38,80)" />
+        </svg>
+      </div>
+      <p class="text-sm tracking-[0.2em] uppercase mb-2 text-[#d4a54a]">uma história de amor</p>
+      <h1 class="font-display text-5xl md:text-6xl font-bold mb-4 shimmer-text">Bem-vinda, Julia ❤️</h1>
+      <p class="text-xl md:text-2xl mb-8 italic opacity-90 px-2">Preparei um quiz com perguntas sobre nós... <br> Cada acerto nos aproxima ainda mais.</p>
+      <button id="start-btn" class="btn-rose px-10 py-3 rounded-full text-xl font-display tracking-wider shadow-xl">✨ Começar ✨</button>
+      <div class="flex justify-center gap-4 mt-8 text-2xl opacity-60"><span>🌹</span><span>💗</span><span>🌹</span></div>
+    </div>
+  </div>
+
+  <!-- TELA DO QUIZ -->
+  <div id="quiz-screen" class="screen screen-hidden">
+    <div class="w-full max-w-xl mx-auto px-4 py-8 relative">
+      <div class="flex justify-center gap-3 mb-5" id="progress-dots"></div>
+      <div class="glow-card rounded-2xl p-6 md:p-8 relative" style="background: var(--surface-card); border: 1px solid rgba(196,35,72,0.4);">
+        <div id="quiz-transition-wrapper">
+          <p id="q-number" class="text-center text-[#d4a54a] text-sm tracking-[0.2em] mb-2"></p>
+          <h2 id="q-text" class="font-display text-2xl md:text-3xl text-center font-bold leading-tight mb-6"></h2>
+          <div id="answer-area" class="mb-5"></div>
+          <div id="feedback" class="text-center min-h-[52px] text-base"></div>
+        </div>
+        <div class="flex justify-center mt-4 opacity-50"><span class="heart-beat text-2xl">🌹</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA DE COMEMORAÇÃO -->
+  <div id="celebration-screen" class="screen screen-hidden celebration-bg">
+    <div class="text-center px-6 py-12 max-w-lg mx-auto w-full">
+      <div class="heart-beat text-6xl mb-5">❤️🌹❤️</div>
+      <p class="tracking-[0.2em] uppercase text-[#d4a54a] text-sm mb-3">você acertou todas, meu amor</p>
+      <h2 id="final-msg" class="font-display text-3xl md:text-5xl font-bold mb-7 shimmer-text leading-relaxed">A Lilica vai ficar muito feliz com os pais dela juntos novamente!</h2>
+      <div class="text-xl md:text-2xl italic text-rose-100/80 mb-7">Te amo infinitamente, hoje e sempre. 💖</div>
+      <div class="flex justify-center gap-4 text-3xl mb-8"><span>🌹</span><span>💕</span><span>🌹</span><span>💖</span><span>🌹</span></div>
+      <button id="restart-btn" class="btn-rose px-8 py-3 rounded-full text-lg font-display tracking-wide shadow-xl">Recomeçar com amor ❤️</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // ======================= QUIZ DATA =======================
+    const questions = [
+      { question: "Quando nos conhecemos?", answer: "31/10", hint: "Dia e mês inesquecíveis 💕", type: "input" },
+      { question: "Qual o momento mais marcante nosso?", answer: "Nossa primeira viagem juntos sozinhos.", options: ["O nosso primeiro beijo.", "Nossa primeira viagem juntos sozinhos.", "A primeira vez que disse \"eu te amo\".", "O dia em que nos conhecemos."], type: "choice" },
+      { question: "Qual a nossa maior qualidade?", answer: "O amor um pelo outro", options: ["A paciência infinita.", "O amor um pelo outro", "O senso de humor.", "A cumplicidade nas aventuras."], type: "choice" },
+      { question: "Qual a nossa maior loucura?", answer: "Viver a nossa vida, sem ligar para ninguém.", options: ["Viajar sem planejar nada.", "Viver a nossa vida, sem ligar para ninguém.", "Ficar acordados a noite inteira conversando.", "Fazer promessas malucas de amor."], type: "choice" },
+      { question: "Aceita dividir essa vida maluca comigo novamente?", answer: "Com certeza", options: ["Com certeza", "Preciso pensar...", "Talvez...", "Só se tiver muito amor!"], type: "choice" }
+    ];
+
+    let currentQuestion = 0;
+    let awaitingTransition = false;
+
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const celebrationScreen = document.getElementById('celebration-screen');
+    const progressDots = document.getElementById('progress-dots');
+    const qNumberEl = document.getElementById('q-number');
+    const qTextEl = document.getElementById('q-text');
+    const answerArea = document.getElementById('answer-area');
+    const feedbackDiv = document.getElementById('feedback');
+    const transitionWrapper = document.getElementById('quiz-transition-wrapper');
+
+    // Pétalas
+    function createPetals() {
+      const container = document.getElementById('petals-container');
+      const petalShapes = ['🌸', '🌹', '🩷', '🌺', '✿', '❁'];
+      for (let i = 0; i < 28; i++) {
+        const petal = document.createElement('div');
+        petal.className = 'petal';
+        petal.textContent = petalShapes[Math.floor(Math.random() * petalShapes.length)];
+        petal.style.left = Math.random() * 100 + '%';
+        petal.style.fontSize = (Math.random() * 18 + 12) + 'px';
+        petal.style.animationDuration = (Math.random() * 9 + 8) + 's';
+        petal.style.animationDelay = (Math.random() * 12) + 's';
+        petal.style.opacity = '0.5';
+        container.appendChild(petal);
+      }
+    }
+    createPetals();
+
+    function showScreen(screenId) {
+      [welcomeScreen, quizScreen, celebrationScreen].forEach(s => {
+        if (s) {
+          s.classList.remove('screen-visible');
+          s.classList.add('screen-hidden');
+        }
+      });
+      const target = document.getElementById(screenId);
+      if (target) {
+        setTimeout(() => {
+          target.classList.remove('screen-hidden');
+          target.classList.add('screen-visible');
+        }, 60);
+      }
+    }
+
+    function updateProgressDots() {
+      if (!progressDots) return;
+      progressDots.innerHTML = '';
+      for (let i = 0; i < questions.length; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'progress-dot';
+        if (i === currentQuestion) dot.classList.add('active');
+        if (i < currentQuestion) dot.classList.add('completed');
+        progressDots.appendChild(dot);
+      }
+    }
+
+    function normalizeText(str) {
+      return str.trim().toLowerCase().replace(/\s+/g, ' ').replace(/[.,!?;]$/, '');
+    }
+
+    function showCorrectFeedback() {
+      const messages = ["✨ Perfeita, meu amor! ✨", "❤️ Exatamente! Você conhece nosso coração ❤️", "💕 Acertou! Você é a razão do meu sorriso 💕", "🌹 Certíssima! Mais um passo juntos 🌹"];
+      feedbackDiv.innerHTML = `<div class="text-[#d4a54a] text-lg md:text-xl font-display animate-pulse">${messages[Math.floor(Math.random() * messages.length)]}</div>`;
+    }
+
+    function showWrongFeedback() {
+      const msgs = ["Não foi dessa vez, tente de novo coração 🌹", "Quase lá, amor! Pensa com carinho ❤️", "Essa não é a resposta certa, mas confio em você 💕", "Tenta outra vez, meu bem! Estamos quase lá 💖"];
+      feedbackDiv.innerHTML = `<div class="text-[#ff9f9f] text-base md:text-lg">${msgs[Math.floor(Math.random() * msgs.length)]}</div>`;
+    }
+
+    function animateQuestionTransition(renderCallback) {
+      if (awaitingTransition) return;
+      awaitingTransition = true;
+      if (transitionWrapper) {
+        transitionWrapper.style.animation = 'fadeSlideOut 0.22s forwards';
+      }
+      setTimeout(() => {
+        renderCallback();
+        if (transitionWrapper) {
+          transitionWrapper.style.animation = '';
+          transitionWrapper.classList.add('question-fade-in');
+          setTimeout(() => {
+            if (transitionWrapper) transitionWrapper.classList.remove('question-fade-in');
+          }, 450);
+        }
+        awaitingTransition = false;
+      }, 220);
+    }
+
+    function renderCurrentQuestion() {
+      const q = questions[currentQuestion];
+      qNumberEl.textContent = `Pergunta ${currentQuestion + 1} de ${questions.length}`;
+      qTextEl.textContent = q.question;
+      feedbackDiv.innerHTML = '';
+      answerArea.innerHTML = '';
+
+      if (q.type === 'input') {
+        const wrapperDiv = document.createElement('div');
+        wrapperDiv.className = 'flex flex-col items-center gap-5 w-full';
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.placeholder = q.hint || 'Digite sua resposta...';
+        input.className = 'quiz-input w-full max-w-xs text-center text-xl px-5 py-3 rounded-2xl focus:outline-none';
+        const btn = document.createElement('button');
+        btn.textContent = 'Responder 💝';
+        btn.className = 'btn-rose px-8 py-3 rounded-full text-lg font-display';
+        btn.onclick = () => handleInputAnswer(input.value);
+        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleInputAnswer(input.value); });
+        wrapperDiv.appendChild(input);
+        wrapperDiv.appendChild(btn);
+        answerArea.appendChild(wrapperDiv);
+        setTimeout(() => input.focus(), 100);
+      } else {
+        const grid = document.createElement('div');
+        grid.className = 'grid grid-cols-1 gap-3';
+        q.options.forEach((opt) => {
+          const choiceBtn = document.createElement('button');
+          choiceBtn.textContent = opt;
+          choiceBtn.className = 'quiz-input text-left px-5 py-4 rounded-xl text-lg transition-all hover:border-rose-400 border text-center md:text-left';
+          choiceBtn.style.borderColor = 'rgba(196,35,72,0.4)';
+          choiceBtn.onclick = () => handleChoiceAnswer(opt, choiceBtn, grid);
+          grid.appendChild(choiceBtn);
+        });
+        answerArea.appendChild(grid);
+      }
+      updateProgressDots();
+    }
+
+    function handleInputAnswer(value) {
+      if (!value.trim()) return;
+      const currentQ = questions[currentQuestion];
+      if (normalizeText(value) === normalizeText(currentQ.answer)) {
+        disableCurrentInputButtons(true);
+        showCorrectFeedback();
+        setTimeout(() => goToNextQuestion(), 1400);
+      } else {
+        showWrongFeedback();
+        const inputField = document.querySelector('#answer-area input');
+        if (inputField) { inputField.value = ''; inputField.focus(); }
+      }
+    }
+
+    function handleChoiceAnswer(selected, btn, gridContainer) {
+      const currentQ = questions[currentQuestion];
+      const allBtns = gridContainer.querySelectorAll('button');
+      allBtns.forEach(b => { b.style.pointerEvents = 'none'; });
+      
+      if (normalizeText(selected) === normalizeText(currentQ.answer)) {
+        btn.style.borderColor = '#d4a54a';
+        btn.style.backgroundColor = 'rgba(212,165,74,0.2)';
+        showCorrectFeedback();
+        setTimeout(() => goToNextQuestion(), 1400);
+      } else {
+        btn.style.borderColor = '#ff7777';
+        btn.style.backgroundColor = 'rgba(255,80,80,0.15)';
+        showWrongFeedback();
+        setTimeout(() => {
+          allBtns.forEach(b => { b.style.pointerEvents = 'auto'; });
+          btn.style.borderColor = 'rgba(196,35,72,0.4)';
+          btn.style.backgroundColor = '';
+        }, 1300);
+      }
+    }
+
+    function disableCurrentInputButtons(disable) {
+      const btns = document.querySelectorAll('#answer-area button, #answer-area input');
+      btns.forEach(el => {
+        if (disable) el.style.pointerEvents = 'none';
+        else el.style.pointerEvents = 'auto';
+      });
+    }
+
+    function goToNextQuestion() {
+      if (currentQuestion + 1 < questions.length) {
+        currentQuestion++;
+        animateQuestionTransition(() => {
+          renderCurrentQuestion();
+        });
+      } else {
+        showCelebrationWithLove();
+      }
+    }
+
+    function showCelebrationWithLove() {
+      showScreen('celebration-screen');
+      launchRomanticConfetti();
+      launchFloatingHearts();
+      extraRosePetalsBurst();
+    }
+
+    function launchRomanticConfetti() {
+      const colors = ['#c42348', '#d4a54a', '#ff6f91', '#ffb347', '#f08080', '#e63946'];
+      for (let i = 0; i < 110; i++) {
+        setTimeout(() => {
+          const conf = document.createElement('div');
+          conf.className = 'confetti-piece';
+          conf.style.left = Math.random() * 100 + '%';
+          conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          conf.style.width = (Math.random() * 10 + 5) + 'px';
+          conf.style.height = (Math.random() * 10 + 5) + 'px';
+          conf.style.borderRadius = Math.random() > 0.6 ? '50%' : '2px';
+          conf.style.animationDuration = (Math.random() * 2.5 + 2) + 's';
+          document.body.appendChild(conf);
+          setTimeout(() => conf.remove(), 4500);
+        }, i * 40);
+      }
+    }
+
+    function launchFloatingHearts() {
+      const heartEmojis = ['❤️', '💖', '💗', '🌹', '💕', '🌸', '💘'];
+      for (let i = 0; i < 35; i++) {
+        setTimeout(() => {
+          const heartDiv = document.createElement('div');
+          heartDiv.className = 'float-heart';
+          heartDiv.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+          heartDiv.style.left = Math.random() * 85 + 5 + '%';
+          heartDiv.style.fontSize = (Math.random() * 24 + 20) + 'px';
+          heartDiv.style.animationDuration = (Math.random() * 2.8 + 2.5) + 's';
+          document.body.appendChild(heartDiv);
+          setTimeout(() => heartDiv.remove(), 3800);
+        }, i * 130);
+      }
+    }
+
+    function extraRosePetalsBurst() {
+      const container = document.getElementById('petals-container');
+      for (let i = 0; i < 45; i++) {
+        setTimeout(() => {
+          const rosePetal = document.createElement('div');
+          rosePetal.className = 'petal';
+          rosePetal.textContent = '🌹';
+          rosePetal.style.left = Math.random() * 100 + '%';
+          rosePetal.style.fontSize = (Math.random() * 22 + 14) + 'px';
+          rosePetal.style.animationDuration = (Math.random() * 5 + 4) + 's';
+          rosePetal.style.opacity = '0.7';
+          container.appendChild(rosePetal);
+          setTimeout(() => rosePetal.remove(), 5500);
+        }, i * 70);
+      }
+    }
+
+    function resetAndGoToWelcome() {
+      currentQuestion = 0;
+      showScreen('welcome-screen');
+      if (transitionWrapper) transitionWrapper.style.animation = '';
+      awaitingTransition = false;
+    }
+
+    // Eventos com fallback para touch
+    const startBtn = document.getElementById('start-btn');
+    const restartBtn = document.getElementById('restart-btn');
+
+    if (startBtn) {
+      startBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        currentQuestion = 0;
+        showScreen('quiz-screen');
+        setTimeout(() => {
+          renderCurrentQuestion();
+          if (transitionWrapper) transitionWrapper.classList.add('question-fade-in');
+          setTimeout(() => {
+            if (transitionWrapper) transitionWrapper.classList.remove('question-fade-in');
+          }, 500);
+        }, 100);
+      });
+      // Suporte a toque no iOS
+      startBtn.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        startBtn.click();
+      });
+    }
+
+    if (restartBtn) {
+      restartBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        resetAndGoToWelcome();
+      });
+      restartBtn.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        restartBtn.click();
+      });
+    }
+  })();
+</script>
+</body>
+</html>
